@@ -1,0 +1,18 @@
+{
+  "name": "Bricks",
+  "short_name": "Bricks",
+  "description": "Gestion de briqueterie — stocks, production, paie et bénéfice",
+  "start_url": "/connexion",
+  "display": "standalone",
+  "background_color": "#f3f6f5",
+  "theme_color": "#142524",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

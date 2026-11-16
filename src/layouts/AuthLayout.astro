@@ -1,0 +1,82 @@
+---
+import '@fontsource-variable/plus-jakarta-sans';
+import '../styles/global.css';
+import AuthHero from '../components/auth/AuthHero';
+import SeoHead from '../components/SeoHead.astro';
+import { LOCALE_BOOT_SCRIPT, localeFromRequest, t } from '../lib/i18n';
+
+type Props = { titleKey?: string; title?: string };
+const { titleKey = 'auth.pageTitle', title } = Astro.props;
+const locale = localeFromRequest(Astro.request);
+const pageTitle = title ?? t(titleKey, undefined, locale);
+const description = t('auth.heroBody', undefined, locale);
+---
+
+<!doctype html>
+<html lang={locale} class="h-dvh overflow-hidden">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f0f12" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle} · Bricks</title>
+    <SeoHead title={pageTitle} description={description} locale={locale} />
+    <script is:inline set:html={LOCALE_BOOT_SCRIPT} />
+    <script is:inline>
+      const storedTheme = localStorage.getItem('br-theme');
+      if (storedTheme === 'dark' || (storedTheme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+  </head>
+  <body class="h-dvh max-h-dvh overflow-hidden bg-canvas text-ink">
+    <div class="grid h-full max-h-dvh overflow-hidden lg:grid-cols-[1.08fr_1fr]">
+      <aside
+        class="relative hidden h-full overflow-hidden bg-slate-950 text-white lg:flex lg:flex-col lg:justify-between lg:px-10 lg:py-8 xl:px-12"
+        aria-hidden="true"
+      >
+        <div
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgb(165_148_249/0.28),transparent_42%),radial-gradient(circle_at_88%_78%,rgb(190_242_100/0.16),transparent_38%)]"
+        >
+        </div>
+        <div
+          class="pointer-events-none absolute inset-0 opacity-[0.07]"
+          style="background-image: linear-gradient(rgb(255_255_255/0.5) 1px, transparent 1px), linear-gradient(90deg, rgb(255_255_255/0.5) 1px, transparent 1px); background-size: 48px 48px;"
+        >
+        </div>
+        <AuthHero client:load />
+      </aside>
+
+      <main class="relative flex h-full items-center justify-center overflow-hidden px-5 py-6 sm:px-10">
+        <div
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgb(165_148_249/0.12),transparent_40%),radial-gradient(circle_at_10%_90%,rgb(190_242_100/0.08),transparent_35%)] lg:bg-none"
+          aria-hidden="true"
+        >
+        </div>
+        <div class="relative w-full max-w-md">
+          <slot />
+        </div>
+      </main>
+    </div>
+    <script>
+      import '../lib/appwrite';
+    </script>
+    <script is:inline>
+      document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element ? event.target.closest('[data-demo-login]') : null;
+        if (!target) return;
+        event.preventDefault();
+        try {
+          sessionStorage.setItem('br-auth-demo', '1');
+        } catch (_) {}
+        document.cookie = 'br-auth=demo; Path=/; SameSite=Lax; Max-Age=604800';
+        let next = '/app';
+        try {
+          const raw = new URLSearchParams(location.search).get('next');
+          if (raw && raw.startsWith('/app') && !raw.startsWith('//')) next = raw;
+        } catch (_) {}
+        window.location.assign(next);
+      });
+    </script>
+  </body>
+</html>

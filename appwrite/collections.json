@@ -1,0 +1,35 @@
+{
+  "databaseId": "bricks",
+  "databaseName": "Bricks",
+  "collections": [
+    { "id": "sites", "name": "Site", "attributes": ["name", "city"] },
+    { "id": "profiles", "name": "Profile", "attributes": ["userId", "role", "siteIds", "onboardingCompleted", "onboardingVersion", "notificationPrefs"] },
+    { "id": "materials", "name": "Material", "attributes": ["siteId", "name", "kind", "unit", "alertThreshold", "unitCost"] },
+    { "id": "block_types", "name": "BlockType", "attributes": ["siteId", "name", "dimensions", "priceDeliveredCity", "priceExWorks", "alertThreshold"] },
+    { "id": "block_yields", "name": "BlockYield", "attributes": ["blockTypeId", "blocksPerBag", "effectiveFrom"] },
+    { "id": "suppliers", "name": "Supplier", "attributes": ["name", "phone", "materials", "paymentTerms"] },
+    { "id": "customers", "name": "Customer", "attributes": ["name", "phone"] },
+    { "id": "stock_movements", "name": "StockMovement", "attributes": ["siteId", "itemType", "itemId", "quantity", "reason", "unitCost", "sourceRef", "clientOpId", "createdById"], "write": "functions-only" },
+    { "id": "supply_dossiers", "name": "SupplyDossier", "attributes": ["siteId", "kind", "materialId", "supplierId", "blNumber", "announcedQty", "receivedQty", "unitPrice", "status", "paidTotal"] },
+    { "id": "production_runs", "name": "ProductionRun", "attributes": ["siteId", "date", "blockTypeId", "bagsUsed", "goodBlocks", "lostBlocks", "chiefName", "materialCost"] },
+    { "id": "sales", "name": "Sale", "attributes": ["siteId", "customerId", "date", "deliveryMode", "paymentMode", "deposit", "lines", "brokenInTransit"] },
+    { "id": "meters", "name": "Meter", "attributes": ["siteId", "name", "kind", "unit", "unitTariff"] },
+    { "id": "meter_readings", "name": "MeterReading", "attributes": ["meterId", "previousIndex", "newIndex", "date"] },
+    { "id": "utility_bills", "name": "UtilityBill", "attributes": ["meterId", "month", "amount"] },
+    { "id": "employees", "name": "Employee", "attributes": ["siteId", "name", "role", "contract", "baseRate", "hiredAt"] },
+    { "id": "attendance", "name": "Attendance", "attributes": ["employeeId", "date", "code"] },
+    { "id": "payroll_periods", "name": "PayrollPeriod", "attributes": ["siteId", "label", "start", "end", "status", "slips"] },
+    { "id": "alerts", "name": "Alert", "attributes": ["type", "title", "message", "severity", "status", "href", "dedupeKey"], "write": "functions-only" },
+    { "id": "weekly_reports", "name": "WeeklyReport", "attributes": ["weekStart", "weekEnd", "status", "version", "snapshot"], "closedWrite": "functions-only" },
+    { "id": "expenses", "name": "Expense", "attributes": ["siteId", "date", "category", "amount", "note"] },
+    { "id": "settings", "name": "Setting", "attributes": ["currency", "weekEndsOn", "thresholds", "cnpsEnabled"] },
+    { "id": "audit_logs", "name": "AuditLog", "attributes": ["action", "entity", "entityId", "before", "after", "actorId", "at"], "write": "functions-only" },
+    { "id": "push_devices", "name": "PushDevice", "attributes": ["userId", "targetId", "platform", "lastSeenAt"] },
+    { "id": "notification_logs", "name": "NotificationLog", "attributes": ["userId", "alertId", "status", "channel"], "write": "functions-only" }
+  ],
+  "labels": ["owner", "manager", "storekeeper", "production", "accounting", "secretary"],
+  "notes": [
+    "Never grant client write on stock_movements, alerts, audit_logs, notification_logs, closed weekly_reports.",
+    "Sensitive mutations go through Appwrite Functions with Zod + role re-check."
+  ]
+}

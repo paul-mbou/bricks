@@ -1,0 +1,25 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist",
+    "appwrite/functions",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "paths": {
+      "@domain/*": [
+        "./packages/domain/src/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  }
+}

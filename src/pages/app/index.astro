@@ -1,0 +1,8 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import DashboardPage from '../../components/app/DashboardPage';
+---
+
+<AppLayout titleKey="dashboard.title">
+  <DashboardPage client:load />
+</AppLayout>

@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant rail (&:where([data-sidebar='collapsed'], [data-sidebar='collapsed'] *));
+
+@theme inline {
+  --color-canvas: var(--br-canvas);
+  --color-panel: var(--br-panel);
+  --color-sunken: var(--br-sunken);
+  --color-line: var(--br-line);
+  --color-ink: var(--br-ink);
+  --color-ink-soft: var(--br-ink-soft);
+  --color-ink-mute: var(--br-ink-mute);
+}
+
+:root {
+  --br-canvas: #f4f3f8;
+  --br-panel: #ffffff;
+  --br-sunken: #eeebf6;
+  --br-line: #e4e0f0;
+  --br-ink: #1a1a1a;
+  --br-ink-soft: #3f3f46;
+  --br-ink-mute: #71717a;
+}
+
+.dark {
+  --br-canvas: #12101a;
+  --br-panel: #1f1c2e;
+  --br-sunken: #2a2640;
+  --br-line: #3a3552;
+  --br-ink: #f5f3ff;
+  --br-ink-soft: #d4d0e8;
+  --br-ink-mute: #9b96b3;
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-slate-50: #f7f7f8;
+  --color-slate-100: #eeeff1;
+  --color-slate-200: #dcdde2;
+  --color-slate-300: #b5b6be;
+  --color-slate-400: #8a8b96;
+  --color-slate-500: #63646f;
+  --color-slate-600: #45454f;
+  --color-slate-700: #2e2e36;
+  --color-slate-800: #1f1f26;
+  --color-slate-900: #1a1a1a;
+  --color-slate-950: #0f0f12;
+
+  --color-clay-50: #f3f0ff;
+  --color-clay-100: #e9e4ff;
+  --color-clay-200: #d4cbff;
+  --color-clay-300: #b8a9ff;
+  --color-clay-400: #a594f9;
+  --color-clay-500: #8b7cf7;
+  --color-clay-600: #6f5fe0;
+  --color-clay-700: #5647b8;
+
+  --color-lime-400: #d7ff77;
+  --color-lime-500: #c8f55a;
+  --color-soft-yellow: #fde68a;
+
+  --shadow-card: 0 1px 2px rgb(26 26 26 / 0.04), 0 12px 32px -16px rgb(26 26 26 / 0.14);
+
+  --animate-dialog-in: dialog-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-sheet-in: sheet-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-backdrop-in: backdrop-in 0.28s ease-out both;
+
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateX(2rem);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Override UA dialog centering so sheets can dock right */
+  dialog {
+    margin: 0;
+    max-width: none;
+    max-height: none;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-clay-400;
+  }
+
+  ::selection {
+    @apply bg-clay-200 text-slate-950;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-[0.9375rem] font-semibold whitespace-nowrap transition duration-200 select-none;
+}
+
+@utility btn-clay {
+  @apply btn bg-clay-500 text-white shadow-[0_8px_24px_-8px_rgb(139_124_247/0.45)] hover:bg-clay-400 active:translate-y-px;
+}
+
+@utility btn-slate {
+  @apply btn bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px;
+}
+
+@utility btn-quiet {
+  @apply btn border border-line bg-panel text-ink hover:bg-sunken active:translate-y-px;
+}
+
+@utility app-card {
+  @apply rounded-2xl border border-line bg-panel shadow-card dark:shadow-none;
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-[90rem] px-5 sm:px-8 lg:px-12;
+}

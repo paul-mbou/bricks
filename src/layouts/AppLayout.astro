@@ -1,0 +1,130 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/plus-jakarta-sans';
+import '../styles/global.css';
+import Topbar from '../components/app/Topbar';
+import Sidebar from '../components/app/Sidebar';
+import GuidedTour from '../components/app/GuidedTour';
+import StoreHydrator from '../components/app/StoreHydrator';
+import SeoHead from '../components/SeoHead.astro';
+import { LOCALE_BOOT_SCRIPT, localeFromRequest, t } from '../lib/i18n';
+
+type Props = { title?: string; titleKey?: string };
+const { title, titleKey } = Astro.props;
+const locale = localeFromRequest(Astro.request);
+const pageTitle = title ?? (titleKey ? t(titleKey, undefined, locale) : 'Bricks');
+const skipLabel = t('common.skipToContent', undefined, locale);
+const description = t('auth.heroBody', undefined, locale);
+const current = Astro.url.pathname.replace(/\/+$/, '') || '/';
+---
+
+<!doctype html>
+<html lang={locale} data-auth-pending>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1a1a1a" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle} · Bricks</title>
+    <SeoHead title={pageTitle} description={description} locale={locale} noindex />
+    <ClientRouter />
+    <script is:inline set:html={LOCALE_BOOT_SCRIPT} />
+    <script is:inline>
+      const hasAuthMarker = () => {
+        try {
+          if (sessionStorage.getItem('br-auth-demo') === '1') return true;
+        } catch (_) {}
+        return /(?:^|; )br-auth=(?:demo|live)(?:;|$)/.test(document.cookie);
+      };
+      const unlockShell = () => {
+        if (hasAuthMarker()) document.documentElement.removeAttribute('data-auth-pending');
+      };
+      const storedTheme = localStorage.getItem('br-theme');
+      if (storedTheme === 'dark' || (storedTheme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      if (localStorage.getItem('br-sidebar') === 'collapsed') document.documentElement.dataset.sidebar = 'collapsed';
+      unlockShell();
+      // ClientRouter re-applies SSR `data-auth-pending` on swap — clear before paint.
+      document.addEventListener('astro:before-swap', (event) => {
+        if (hasAuthMarker()) event.newDocument.documentElement.removeAttribute('data-auth-pending');
+      });
+      document.addEventListener('astro:page-load', unlockShell);
+    </script>
+    <style is:global>
+      html[data-auth-pending] body {
+        visibility: hidden;
+      }
+    </style>
+    <script>
+      import '../lib/appwrite';
+      import { getAuthState } from '../lib/auth';
+      const resolveAuth = () => {
+        getAuthState()
+          .then((state) => {
+            if (state.status === 'anonymous') {
+              window.location.replace('/connexion');
+              return;
+            }
+            document.documentElement.removeAttribute('data-auth-pending');
+          })
+          .catch(() => {
+            // Never leave the shell permanently hidden on Appwrite/network failure.
+            document.documentElement.removeAttribute('data-auth-pending');
+            window.location.replace('/connexion');
+          });
+      };
+      resolveAuth();
+      document.addEventListener('astro:page-load', resolveAuth);
+    </script>
+  </head>
+  <body class="min-h-dvh bg-canvas text-ink">
+    <a
+      href="#contenu"
+      class="sr-only z-[60] rounded-lg bg-clay-400 px-4 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+    >
+      {skipLabel}
+    </a>
+    {/*
+      Do not transition:persist React islands — Astro's after-swap unmount race
+      clears the React root and leaves blank shells on soft navigation.
+    */}
+    <Sidebar client:load current={current} />
+    <div class="transition-[padding] duration-200 ease-out motion-reduce:transition-none lg:pl-72 lg:rail:pl-20">
+      <Topbar client:load current={current} />
+      <main id="contenu" class="mx-auto w-full max-w-[96rem] px-4 pt-6 pb-28 sm:px-6 lg:px-10 lg:pt-8 lg:pb-16">
+        <slot />
+      </main>
+    </div>
+    <StoreHydrator client:load />
+    <GuidedTour client:load />
+    <script is:inline>
+      // One-shot recovery if a soft navigation left the shell empty.
+      (() => {
+        const KEY = 'br-island-recover';
+        const check = () => {
+          const islands = document.querySelectorAll('astro-island');
+          if (!islands.length) return;
+          const blank = [...islands].every((el) => el.children.length === 0);
+          if (!blank) {
+            try { sessionStorage.removeItem(KEY); } catch (_) {}
+            return;
+          }
+          try {
+            if (sessionStorage.getItem(KEY) === location.pathname) return;
+            sessionStorage.setItem(KEY, location.pathname);
+          } catch (_) {}
+          location.reload();
+        };
+        document.addEventListener('astro:page-load', () => setTimeout(check, 80));
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
+    </script>
+  </body>
+</html>
