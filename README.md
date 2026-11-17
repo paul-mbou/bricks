@@ -3,9 +3,15 @@
 **Operations software for a brickyard.**
 Production, stocks, approvisionnement, ventes, énergie, paie, partenaires et récaps — avec un mode démonstration si Appwrite n’est pas configuré.
 
-![Bricks](docs/portfolio/cover.png)
+![Connexion](docs/portfolio/connexion.png)
+
+![Tableau de bord](docs/portfolio/dashboard.png)
+
+![Stocks](docs/portfolio/stocks.png)
 
 Application de gestion de briqueterie (Astro + React + Appwrite).
+
+These screens come from a local `astro dev` session in demo mode. The figures are fictional sample data, kept separate from any live Appwrite project.
 
 ## Démarrage
 
